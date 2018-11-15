@@ -1,0 +1,25 @@
+<server description="Sample Liberty server">
+
+  <featureManager>
+      <feature>apiDiscovery-1.0</feature>
+      <feature>jaxrs-2.0</feature>
+  </featureManager>
+
+  <httpEndpoint httpPort="${default.http.port}" httpsPort="${default.https.port}"
+      id="defaultHttpEndpoint" host="*" />
+
+  <keyStore id="defaultKeyStore"/>
+
+  <basicRegistry id="basic" realm="ibm/api">
+      <user name="guest" password="password" />
+  </basicRegistry>
+
+
+  <!-- Automatically expand WAR files and EAR files -->
+  <applicationManager autoExpand="true"/>
+
+  <applicationMonitor pollingRate="1000ms"/>
+
+  <webApplication name="javalibertybackendforfrontend" location="${app.location}"/>
+
+</server>

@@ -3,6 +3,8 @@
 
 # Create and deploy a Java Backend For Frontend (BFF) using Java EE
 
+> We have similar patterns available for [Node.js](https://github.com/IBM/nodejs-backend-for-frontend), [Swift](https://github.com/IBM/swift-backend-for-frontend), and [Java Spring](https://github.com/IBM/spring-backend-for-frontend) as well!
+
 The IBM Cloud BFF Starter for Java - MicroProfile / Java EE provides a starting point for creating Java BFF applications running on [WebSphere Liberty](https://developer.ibm.com/wasdev/).
 
 ![](doc/source/images/architecture.png)

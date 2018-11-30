@@ -1,6 +1,11 @@
 FROM websphere-liberty:webProfile7
 LABEL maintainer="IBM Java Engineering at IBM Cloud"
 COPY /target/liberty/wlp/usr/servers/defaultServer /config/
+# Grant write access to apps folder, this is to support old and new docker versions.
+# Liberty document reference : https://hub.docker.com/_/websphere-liberty/
+USER root
+RUN chmod g+w /config/apps
+USER 1001
 # Install required features if not present, install APM Data Collector
 RUN installUtility install --acceptLicense defaultServer && installUtility install --acceptLicense apmDataCollector-7.4
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/lib:/opt/ibm/wlp/usr/extension/liberty_dc/toolkit/lib/lx8266 \

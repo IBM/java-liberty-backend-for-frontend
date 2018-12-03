@@ -5,7 +5,16 @@
 
 > We have similar patterns available for [Node.js](https://github.com/IBM/nodejs-backend-for-frontend), [Swift](https://github.com/IBM/swift-backend-for-frontend), and [Java Spring](https://github.com/IBM/spring-backend-for-frontend) as well!
 
-The IBM Cloud BFF Starter for Java - MicroProfile / Java EE provides a starting point for creating Java BFF applications running on [WebSphere Liberty](https://developer.ibm.com/wasdev/).
+In this code pattern, you will create a Backend for Frontend (BFF) web service using Java EE [MicroProfile](https://microprofile.io/) running on [WebSphere Liberty](https://developer.ibm.com/wasdev/), matching a RESTful API documented in [Swagger](http://swagger.io).
+
+A BFF can be used to elegantly expose complex backend systems to multiple client-facing platforms, such as iOS and the web, without building a monolothic API that attempts to serve all clients equally. Different types of clients require different types of user experiences, and having a backend API tightly coupled to each specific user experience actually makes for a much more loosely coupled system overall. This pattern helps frontend teams iterate on features faster by giving them more control over the APIs they interact with, without affecting the user experience or development team driving a sister frontend.
+
+When you have completed this code pattern, you will understand how to:
+
+* Build out the Backend for Frontend (BFF) architecture pattern
+* Deploy to Kubernetes, Cloud Foundry or a DevOps Pipeline
+* Operate an application with monitoring and distributed trace
+* Connect to provisioned services
 
 ![](doc/source/images/architecture.png)
 

@@ -30,7 +30,12 @@ To deploy this application to IBM Cloud using a toolchain click the **Create Too
 
 [![Create Toolchain](https://console.ng.bluemix.net/devops/graphics/create_toolchain_button.png)](https://console.ng.bluemix.net/devops/setup/deploy/)
 
-## Requirements
+1. [Install development tools](#1-install-development-tools)
+1. [Configuration](#2-configuration)
+1. [Project contents](#3-project-contents)
+1. [Run](#4-run)
+
+## 1. Install development tools
 
 * [Maven](https://maven.apache.org/install.html)
 * Java 8: Any compliant JVM should work.
@@ -39,13 +44,13 @@ To deploy this application to IBM Cloud using a toolchain click the **Create Too
     or [Download a Liberty server package](https://developer.ibm.com/assets/wasdev/#filter/assetTypeFilters=PRODUCT)
     that contains the IBM JDK (Windows, Linux)
 
-## Configuration
+## 2. Configuration
 
 The application is configured to provide JAX-RS REST capabilities, JNDI, JSON parsing and Contexts and Dependency Injection (CDI).
 
-These capabilities are provided through dependencies in the pom.xml file and Liberty features enabled in the server config file found in `src/main/liberty/config/server.xml`.
+These capabilities are provided through dependencies in the `pom.xml` file and Liberty features enabled in the server config file found in `src/main/liberty/config/server.xml`.
 
-## Project contents
+## 3. Project contents
 
 The BFF application has a health endpoint which is accessible at `<host>:<port>/javalibertybackendforfrontend/health`. The context root is set in the `src/main/webapp/WEB-INF/ibm-web-ext.xml` file. The ports are set in the `pom.xml` file and exposed to the CLI in the `cli-config.yml` file.
 
@@ -53,7 +58,7 @@ The project contains IBM Cloud specific files that are used to deploy the applic
 
 Credentials are either taken from the `VCAP_SERVICES` environment variable that IBM Cloud provides or from environment variables passed in by JNDI (see the server config file `src/main/liberty/config/server.xml`).
 
-## Run
+## 4. Run
 
 To build and run the application:
 
@@ -62,10 +67,13 @@ To build and run the application:
 
 To run the application in Docker use the Docker file called `Dockerfile`. If you do not want to install Maven locally you can use `Dockerfile-tools` to build a container with Maven installed.
 
-## Endpoints
-
 The application exposes the following endpoints:
+
 * Health endpoint: `<host>:<port>/<contextRoot>/health`
 * Swagger API: `<host>:<port>/ibm/api/explorer/`, you will need to login with the credentials set in your `server.xml` file. By default these are `guest` and `password`.
 
 The context root is set in the `src/main/webapp/WEB-INF/ibm-web-ext.xml` file. The ports are set in the `pom.xml` file and exposed to the CLI in the `cli-config.yml` file.
+
+## License
+
+[Apache 2.0](LICENSE)

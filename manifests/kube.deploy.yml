@@ -35,7 +35,7 @@ spec:
         image: javalibertybackendforfrontend:latest
         readinessProbe:
           httpGet:
-            path: /javalibertybackendforfrontend/health
+            path: /health
             port: 9080
           initialDelaySeconds: 20
         # resources:

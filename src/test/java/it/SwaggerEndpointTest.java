@@ -12,9 +12,8 @@ import org.junit.Test;
 public class SwaggerEndpointTest {
 
     private String port = System.getProperty("liberty.test.port");
-    private String warContext = System.getProperty("war.context");
     private String endpoint = "/swagger/api";
-    private String url = "http://localhost:" + port + "/" + warContext + endpoint;
+    private String url = "http://localhost:" + port + endpoint;
 
     @Test
     public void testEndpoint() throws Exception {

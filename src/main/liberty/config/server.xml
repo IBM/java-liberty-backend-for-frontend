@@ -20,6 +20,6 @@
 
   <applicationMonitor pollingRate="1000ms"/>
 
-  <webApplication name="javalibertybackendforfrontend" location="${app.location}"/>
+  <webApplication name="javalibertybackendforfrontend" location="${app.location}" contextRoot="/"/>
 
 </server>

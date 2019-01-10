@@ -5,7 +5,7 @@
 
 > We have similar patterns available for [Node.js](https://github.com/IBM/nodejs-backend-for-frontend), [Swift](https://github.com/IBM/swift-backend-for-frontend), and [Java Spring](https://github.com/IBM/spring-backend-for-frontend) as well!
 
-In this code pattern, you will create a Backend for Frontend (BFF) web service using Java EE [MicroProfile](https://microprofile.io/) running on [WebSphere Liberty](https://developer.ibm.com/wasdev/), matching a RESTful API documented in [Swagger](http://swagger.io).
+In this code pattern, you will create a Backend for Frontend (BFF) web service using Java EE [MicroProfile](https://microprofile.io/) running on [WebSphere Liberty](https://developer.ibm.com/wasdev/), matching a RESTful API documented in [Swagger](https://swagger.io/).
 
 A BFF can be used to elegantly expose complex backend systems to multiple client-facing platforms, such as iOS and the web, without building a monolothic API that attempts to serve all clients equally. Different types of clients require different types of user experiences, and having a backend API tightly coupled to each specific user experience actually makes for a much more loosely coupled system overall. This pattern helps frontend teams iterate on features faster by giving them more control over the APIs they interact with, without affecting the user experience or development team driving a sister frontend.
 
@@ -37,9 +37,9 @@ Learn more about the Backend for Frontend pattern in this tech talk:
 
 * [Maven](https://maven.apache.org/install.html)
 * Java 8: Any compliant JVM should work.
-  * [Java 8 JDK from Oracle](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-  * [Java 8 JDK from IBM (AIX, Linux, z/OS, IBM i)](http://www.ibm.com/developerworks/java/jdk/),
-    or [Download a Liberty server package](https://developer.ibm.com/assets/wasdev/#filter/assetTypeFilters=PRODUCT)
+  * [Java 8 JDK from Oracle](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
+  * [Java 8 JDK from IBM (AIX, Linux, z/OS, IBM i)](https://www.ibm.com/developerworks/java/jdk/),
+    or [Download a Liberty server package](https://developer.ibm.com/wasdev/downloads/download-latest-stable-websphere-liberty-runtime/)
     that contains the IBM JDK (Windows, Linux)
 
 ## 2. Configuration

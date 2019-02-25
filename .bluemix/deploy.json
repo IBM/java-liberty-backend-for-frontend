@@ -12,12 +12,12 @@
       "description": "The IBM Cloud region",
       "type": "string"
     },
-    "image-registry-token": {
-      "description": "Container Registry access token. Retrievable via [ibmcloud cr tokens]",
+    "dev-organization": {
+      "description": "The IBM Cloud org",
       "type": "string"
     },
-    "kube-cluster-name": {
-      "description": "Your cluster name. Retrieve it with [ibmcloud cs clusters] or via the console at https://cloud.ibm.com/containers-kubernetes/home/clusters.",
+    "dev-space": {
+      "description": "The IBM Cloud space",
       "type": "string"
     },
     "app-name": {
@@ -25,7 +25,7 @@
       "type": "string"
     }
   },
-  "required": ["dev-region",   "app-name", "api-key", "image-registry-token", "image-pull-secret-name", "kube-cluster-name"],  "form": [{
+  "required": ["dev-region", "dev-organization", "dev-space",  "app-name"],  "form": [{
     "type": "validator",
     "url": "/devops/setup/bm-helper/helper.html"
   },
@@ -36,31 +36,33 @@
     "key": "api-key"
   },
   {
-    "type": "password",
-    "readonly": false,
-    "title": "Container Registry access token",
-    "key": "image-registry-token"
-  }, {
-    "type": "text",
-    "readonly": false,
-    "title": "Kubernetes Cluster Name",
-    "key": "kube-cluster-name"
-  },
-  {
     "type": "text",
     "readonly": false,
     "title": "App Name",
     "key": "app-name"
   }, {
     "type": "table",
-    "columnCount": 1,
-    "widths": ["28%"],
+    "columnCount": 3,
+    "widths": ["28%", "28%", "28%"],
     "items": [{
       "type": "label",
       "title": "Region"
     }, {
+      "type": "label",
+      "title": "Organization"
+    }, {
+      "type": "label",
+      "title": "Space"
+    }, {
       "type": "select",
       "key": "dev-region"
+    }, {
+      "type": "select",
+      "key": "dev-organization"
+    }, {
+      "type": "select",
+      "key": "dev-space",
+      "readonly": false
     }]
   }]
 }

@@ -1,0 +1,168 @@
+---
+stages:
+- name: Build Stage
+  inputs:
+  - type: git
+    branch: master
+    service: ${REPO}
+  triggers:
+  - type: commit
+  properties:
+  - name: CHART_NAME
+    value: ${CHART_NAME}
+    type: text
+  - name: KUBECTL_VERSION
+    value: v1.13.3
+    type: text
+  - name: HELM_VERSION
+    value: v2.12.3
+    type: text
+  - name: KUBECTL_DOWNLOAD_URL
+    value: https://storage.googleapis.com/kubernetes-release/release/v1.13.3/bin/linux/amd64/kubectl
+    type: text
+  - name: HELM_DOWNLOAD_URL
+    value: https://kubernetes-helm.storage.googleapis.com/helm-v2.12.3-linux-amd64.tar.gz
+    type: text
+  jobs:
+  - name: Build
+    type: builder
+    build_type: cr
+    artifact_dir: ''
+    target:
+      region_id: ${REGION_ID}
+      api_key: ${API_KEY}
+    namespace: ${REGISTRY_NAMESPACE}
+    image_name: ${CHART_NAME}
+    script: |-
+      #!/bin/bash
+      echo "Doing Java build"
+      echo "DevOps sets LOG_DIR env var, which is used during Java build to check if server started, so unsetting"
+      echo "LOG_DIR: ${LOG_DIR}"
+      LOG_DIR_TEMP=$LOG_DIR
+      unset LOG_DIR
+      echo "LOG_DIR has been unset: ${LOG_DIR}"
+
+      export JAVA_HOME=$JAVA8_HOME
+      mvn -N io.takari:maven:wrapper -Dmaven=3.5.0
+      ./mvnw install -DskipTests
+
+      echo "Java build finished, setting LOG_DIR back to original"
+      LOG_DIR=$LOG_DIR_TEMP
+      echo "LOG_DIR: ${LOG_DIR}"
+
+      mkdir downloads
+      PATH="downloads:$PATH"
+
+      if [ "$(echo "$(helm version -c)" | grep $HELM_VERSION)" == "" ]; then
+        echo "Downloading helm v$HELM_VERSION"
+        curl -SsL "$HELM_DOWNLOAD_URL" -o "helm-${HELM_VERSION}-linux-amd64.tar.gz"
+        tar -zxvf helm-${HELM_VERSION}-linux-amd64.tar.gz
+        chmod 700 linux-amd64/helm
+        mv linux-amd64/helm downloads/helm
+        chmod +x downloads/helm
+      fi
+
+      if [ "$(echo "$(kubectl version --client)" | grep $KUBECTL_VERSION)" == "" ]; then
+        echo "Downloading kubectl v$KUBECTL_VERSION"
+        curl -LO "$KUBECTL_DOWNLOAD_URL"
+        chmod +x kubectl
+        mv kubectl downloads/kubectl
+      fi
+
+      echo "helm version"
+      helm version -c
+      echo "kubectl version"
+      kubectl version --client
+
+      echo "source the container_build script to run in current shell"
+      SCRIPTS_DIR=.bluemix/scripts # SCRIPTS_DIR is used in container_build.sh
+      source ${SCRIPTS_DIR}/container_build.sh
+
+      if  [[ -f post_build.sh ]]; then
+        chmod +x post_build.sh;
+        echo "executing the post_build script";
+        sh post_build.sh;
+      else
+        echo "the post_build script does not exist";
+      fi
+- name: Deploy Stage
+  inputs:
+  - type: job
+    stage: Build Stage
+    job: Build
+  properties:
+  - name: buildProperties
+    value: build.properties
+    type: file
+  - name: CHART_NAME
+    value: ${CHART_NAME}
+    type: text
+  - name: CLUSTER_NAMESPACE
+    value: ${CLUSTER_NAMESPACE}
+    type: text
+  - name: IMAGE_REGISTRY_TOKEN
+    value: ${IMAGE_REGISTRY_TOKEN}
+    type: text
+  triggers:
+  - type: stage
+  jobs:
+  - name: Deploy
+    type: deployer
+    target:
+      application: ${CF_APP}
+      api_key: ${API_KEY}
+      region_id: ${REGION_ID}
+      kubernetes_cluster: ${KUBE_CLUSTER_NAME}
+    script: |-
+      #!/bin/bash
+      export PATH="downloads:$PATH"
+      echo "source the kube_deploy script to run in current shell"
+      source .bluemix/scripts/kube_deploy.sh
+      echo "export IP_ADDR=${IP_ADDR}" >> kube_vars.sh
+      echo "export PORT=${PORT}" >> kube_vars.sh
+- name: Health Stage
+  inputs:
+  - type: job
+    stage: Build Stage
+    job: Build
+  triggers:
+  - type: stage
+  permission:
+    execute: TOOLCHAIN_ADMINS
+  properties:
+  - name: CLUSTER_NAMESPACE
+    value: ${CLUSTER_NAMESPACE}
+    type: text
+  - name: IMAGE_REGISTRY_TOKEN
+    value: ${IMAGE_REGISTRY_TOKEN}
+    type: text
+  - name: buildProperties
+    value: build.properties
+    type: file
+  jobs:
+  - name: Deploy
+    type: deployer
+    deploy_type: kubernetes
+    target:
+      region_id: ${REGION_ID}
+      api_key: ${API_KEY}
+      kubernetes_cluster: ${KUBE_CLUSTER_NAME}
+    script: |-
+      export PATH="downloads:$PATH"
+      IP_ADDR=$(ibmcloud cs workers ${PIPELINE_KUBERNETES_CLUSTER_NAME} | grep normal | head -n 1 | awk '{ print $2 }')
+      if [[ "${CLUSTER_NAMESPACE}" != "default" ]]; then
+        RELEASE_NAME="${CLUSTER_NAMESPACE}-${IMAGE_NAME}"
+      else
+        RELEASE_NAME=${IMAGE_NAME}
+      fi
+      echo "RELEASE_NAME: $RELEASE_NAME"
+
+      PORT=$(kubectl get services --namespace ${CLUSTER_NAMESPACE} | grep ${RELEASE_NAME} | sed 's/[^:]*:\([0-9]*\).*/\1/g')
+      if [ "$(curl -Is http://$IP_ADDR:$PORT/health --connect-timeout 3 --max-time 5 --retry 2 --retry-max-time 30 | head -n 1 | grep 200)" != "" ]; then
+        echo "Successfully reached health endpoint"
+        echo "====================================================================="
+      else
+        echo "Could not reach health endpoint: http://$IP_ADDR:$PORT/health"
+        exit 1;
+      fi;
+
